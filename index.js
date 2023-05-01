@@ -42,6 +42,14 @@ app.get("/api/count", async (req, res) => {
   });
 });
 
+app.get("/api/count/bak", async (req, res) => {
+  const result = await Counter.count();
+  res.send({
+    code: 0,
+    data: result,
+  });
+});
+
 // 小程序调用，获取微信 Open ID
 app.get("/api/wx_openid", async (req, res) => {
   if (req.headers["x-wx-source"]) {
