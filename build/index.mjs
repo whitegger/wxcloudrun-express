@@ -284,6 +284,31 @@ router.post("/verify", async (req, res) => {
     res.send({ status: "Fail", message: error.message, data: null });
   }
 });
+router.post('/phone', (req, res) => {
+  // 拼接 Header 中的 x-wx-openid 到接口中
+  const api = `http://api.weixin.qq.com/wxa/getopendata?openid=${req.headers['x-wx-openid']}`;
+  fetch(api, {
+    method: 'POST',
+    body: JSON.stringify({
+      cloudid_list: [req.body.cloudid], // 传入需要换取的 CloudID
+    }),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then((body) => {
+    try {
+      const data = body.json().data_list[0]
+      const phone = JSON.parse(data.json).data.phoneNumber
+      res.send(phone)
+    } catch (error) {
+      console.log(error)
+      res.send("get phone number failed")
+    }
+  }).catch((error) => {
+    console.error(error)
+    res.send("request phone number failed")
+  })
+});
 app.use("", router);
 app.use("/api", router);
 app.set("trust proxy", 1);
